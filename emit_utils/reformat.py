@@ -25,6 +25,15 @@ envi_typemap = {
     'uint64': 15
 }
 
+parser = argparse.ArgumentParser(description="Resave EMIT NetCDF file.")
+parser.add_argument('input_netcdf', type=str, help='File to convert.')
+parser.add_argument('output_dir', type=str, help='Base directory for output ENVI files')
+parser.add_argument('-ot', '--output_type', type=str, default='ENVI', choices=['ENVI'], help='Output format')
+parser.add_argument('--interleave', type=str, default='BIL', choices=['BIL','BIP','BSQ'], help='Interleave of ENVI file to write')
+parser.add_argument('--overwrite', action='store_true', help='Overwrite existing file')
+parser.add_argument('--orthorectify', action='store_true', help='Orthorectify data')
+args = parser.parse_args()
+
 def single_image_ortho(img_dat, glt, glt_nodata_value=0):
     """Orthorectify a single image
 
@@ -43,15 +52,7 @@ def single_image_ortho(img_dat, glt, glt_nodata_value=0):
     return outdat
 
 
-def main(rawargs=None):
-    parser = argparse.ArgumentParser(description="Apply OE to a block of data.")
-    parser.add_argument('input_netcdf', type=str, help='File to convert.')
-    parser.add_argument('output_dir', type=str, help='Base directory for output ENVI files')
-    parser.add_argument('-ot', '--output_type', type=str, default='ENVI', choices=['ENVI'], help='Output format')
-    parser.add_argument('--interleave', type=str, default='BIL', choices=['BIL','BIP','BSQ'], help='Interleave of ENVI file to write')
-    parser.add_argument('--overwrite', action='store_true', help='Overwrite existing file')
-    parser.add_argument('--orthorectify', action='store_true', help='Orthorectify data')
-    args = parser.parse_args(rawargs)
+def main(args):
 
     nc_ds = netCDF4.Dataset(args.input_netcdf, 'r', format='NETCDF4')
 
@@ -130,4 +131,4 @@ def main(rawargs=None):
 
 
 if __name__ == "__main__":
-    main()
+    main(args)
